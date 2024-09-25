@@ -32,7 +32,6 @@ def update_product(product_id, name=None, category=None, stock_quantity=None, pr
         update_fields.append("price = %s")
         values.append(price)
     
-    # Only execute if there are fields to update
     if update_fields:
         query = f"UPDATE products SET {', '.join(update_fields)} WHERE id = %s"
         values.append(product_id)
@@ -41,3 +40,22 @@ def update_product(product_id, name=None, category=None, stock_quantity=None, pr
 
     cursor.close()
     connection.close()
+
+# Function to delete a product
+def delete_product(product_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+# Function to get low stock products
+def get_low_stock_products(threshold=10):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, name, stock_quantity FROM products WHERE stock_quantity <= %s", (threshold,))
+    low_stock_products = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return [{'id': row[0], 'name': row[1], 'stock_quantity': row[2]} for row in low_stock_products]

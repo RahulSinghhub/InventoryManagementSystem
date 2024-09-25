@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox
-from product import add_product, update_product
+from product import add_product, update_product, delete_product, get_low_stock_products
+from config import get_db_connection
 
 def show_product_menu():
     # Create a new window for managing products
     product_menu = tk.Toplevel()
     product_menu.title("Manage Products")
-    product_menu.geometry("300x300")
+    product_menu.geometry("300x400")
 
     tk.Label(product_menu, text="Product Name:").pack(pady=5)
     product_name = tk.Entry(product_menu)
@@ -36,19 +37,13 @@ def show_product_menu():
 
     tk.Button(product_menu, text="Add Product", command=handle_add_product).pack(pady=10)
 
-    # Update product button (asks for product ID)
-    tk.Label(product_menu, text="Product ID to update:").pack(pady=5)
-    product_id_entry = tk.Entry(product_menu)
-    product_id_entry.pack(pady=5)
-
-    def handle_update_product():
-        product_id = int(product_id_entry.get())
-        name = product_name.get() or None
-        category = product_category.get() or None
-        stock = int(product_quantity.get()) if product_quantity.get() else None
-        price = float(product_price.get()) if product_price.get() else None
-        update_product(product_id, name, category, stock, price)
-        messagebox.showinfo("Success", "Product updated successfully!")
-        product_menu.destroy()
-
-    tk.Button(product_menu, text="Update Product", command=handle_update_product).pack(pady=10)
+# Function to show low stock products
+def show_low_stock():
+    low_stock_products = get_low_stock_products()
+    low_stock_window = tk.Toplevel()
+    low_stock_window.title("Low Stock Products")
+    low_stock_window.geometry("400x300")
+    tk.Label(low_stock_window, text="Low Stock Products", font=("Arial", 14)).pack(pady=10)
+    
+    for product in low_stock_products:
+        tk.Label(low_stock_window, text=f"Product ID: {product['id']}, Name: {product['name']}, Stock: {product['stock_quantity']}").pac

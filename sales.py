@@ -30,7 +30,8 @@ def generate_sales_report():
         plt.xticks(rotation=45)
         
         for i, stock in enumerate(stock_levels):
-            plt.text(i, total_sales[i] + 0.5, f'Stock: {stock}', ha='center')
+            plt.text(i, float(total_sales[i]) + 0.5, f'Stock: {stock}', ha='center')
+
 
         plt.title('Top 5 Best-Selling Products (Last Week)')
         plt.xlabel('Product Names')
