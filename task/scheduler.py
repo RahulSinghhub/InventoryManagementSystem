@@ -23,3 +23,5 @@ schedule.every().day.at("09:00").do(check_stock_levels)
 while True:
     schedule.run_pending()
     time.sleep(60)  # Wait one minute before checking again
+
+

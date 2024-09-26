@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.externals import joblib
 import mysql.connector
 from datetime import datetime, timedelta
-from ..task import email_tasks.send_email_notification
+from ..task import email_tasks
 from database import get_db_connection
 
 
