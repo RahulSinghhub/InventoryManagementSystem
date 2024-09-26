@@ -1,4 +1,3 @@
-
 from ui.main_menu import show_main_menu
 from database import setup_database
 import tkinter as tk
