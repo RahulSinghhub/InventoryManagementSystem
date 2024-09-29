@@ -59,3 +59,9 @@ def get_low_stock_products(threshold=10):
     cursor.close()
     connection.close()
     return [{'id': row[0], 'name': row[1], 'stock_quantity': row[2]} for row in low_stock_products]
+
+
+
+#stock update alert
+#ml model page graph 4 month graph 
+#

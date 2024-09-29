@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import time
 from sklearn.externals import joblib
 import mysql.connector
 from datetime import datetime, timedelta
@@ -7,17 +8,14 @@ from ..task import email_tasks
 from database import get_db_connection
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-
-# Load pre-trained modelclear
-model = joblib.load('ml/prediction.ipynb')
-
-
+import matplotlib.pyplot as plt
+from ..task.email_tasks import send_email_notification
 
 
 # Load and preprocess the data
 def train_model():
     # Step 1: Load the CSV into a DataFrame (for training)
-    df = pd.read_csv('extended_data.csv')
+    df = pd.read_csv('draft_data.csv')
 
     # Step 2: Preprocess the data
     df['Date'] = pd.to_datetime(df['Date'])
@@ -48,6 +46,9 @@ def train_model():
     # Train the model using the training data
     model.fit(X_train, y_train)
 
+    # Save the model for future use
+    joblib.dump(model, 'trained_sales_prediction_model.pkl')
+
     # Return the trained model
     return model
 
@@ -61,6 +62,8 @@ def predict_restock(product_id, stock_quantity, sales_data, model):
     days_until_restock = 0
     today = datetime.today()  # This will be updated with each iteration
     unit_price = 20  # Assuming a constant unit price, adjust if needed
+
+    stock_over_time = []  # To store stock levels over time for graph plotting
 
     # Loop to predict daily sales and calculate how long the stock will last
     while stock_quantity > restock_threshold:
@@ -76,6 +79,7 @@ def predict_restock(product_id, stock_quantity, sales_data, model):
         # Decrease the stock by the predicted daily sales
         stock_quantity -= predicted_sales_next_day
         days_until_restock += 1
+        stock_over_time.append(stock_quantity)  # Record stock quantity
 
         # Move to the next day
         today = today + timedelta(days=1)
@@ -87,7 +91,16 @@ def predict_restock(product_id, stock_quantity, sales_data, model):
         if len(sales_lag_7_values) >= 7:
             sales_lag_7_values = [sales_lag_1] + sales_lag_7_values[:-1]  # Shift the values for the 7-day lag
 
-    # Return the number of days until the stock runs out
+    # Plot the stock depletion over time
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(days_until_restock), stock_over_time, marker='o', linestyle='-', color='b')
+    plt.title(f"Stock Depletion Prediction for Product ID {product_id}")
+    plt.xlabel("Days")
+    plt.ylabel("Stock Remaining")
+    plt.grid(True)
+    plt.show()
+
+    # Return the number of days until the stock runs out and the stock depletion plot
     return days_until_restock, today.strftime('%Y-%m-%d')
 
 # Function to predict restock for all products
@@ -125,7 +138,7 @@ def predict_restock_for_all_products(model):
 
 # Example function to call from frontend
 def get_restock_status_for_all_products():
-    # Load the trained model
+    # Train the model
     model = train_model()
 
     # Get restock status for all products
@@ -137,11 +150,6 @@ def get_restock_status_for_all_products():
             print(f"Product ID: {product_id} | Stock will last for {days_remaining} days, estimated restock date: {restock_date}")
     else:
         print("No products found or sales data missing.")
-
-# Example usage from frontend
-get_restock_status_for_all_products()
-
-
 
 # Function to check stock and notify if running low
 def check_and_notify_low_stock():
@@ -166,6 +174,9 @@ def check_and_notify_low_stock():
 
     cursor.close()
     connection.close()
+
+# Example usage from frontend
+get_restock_status_for_all_products()
 
 # Function to run real-time stock checks
 def run_stock_check():
