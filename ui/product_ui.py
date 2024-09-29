@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
 from product import add_product, update_product, delete_product, get_low_stock_products
 from config import get_db_connection
@@ -37,6 +38,45 @@ def show_product_menu():
 
     tk.Button(product_menu, text="Add Product", command=handle_add_product).pack(pady=10)
 
+
+def show_products_table(root):
+    # Create a new window for showing products
+    products_window = tk.Toplevel(root)
+    products_window.title("Products")
+
+    # Treeview for displaying products
+    tree = ttk.Treeview(products_window, columns=("ID", "Name", "Stock", "Total Sales"), show='headings')
+    tree.heading("ID", text="ID")
+    tree.heading("Name", text="Name")
+    tree.heading("Stock", text="Stock Quantity")
+    tree.heading("Total Sales", text="Total Sales")
+    tree.pack(fill=tk.BOTH, expand=True)
+
+    # Query to get product details along with total sales
+    query = """
+    SELECT p.id, p.name, p.stock_quantity, COALESCE(SUM(s.quantity), 0) AS total_sales
+    FROM products p
+    LEFT JOIN sales s ON p.id = s.product_id
+    GROUP BY p.id;
+    """
+
+    try:
+        connection = get_db_connection()  # Adjust as per your DB connection setup
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        # Insert rows into the treeview
+        for row in rows:
+            tree.insert("", tk.END, values=row)
+
+    except Exception as e:
+        print(f"Error fetching products: {e}")
+    finally:
+        cursor.close()
+        connection.close()
+
+
 # Function to show low stock products
 def show_low_stock():
     low_stock_products = get_low_stock_products()
@@ -44,6 +84,6 @@ def show_low_stock():
     low_stock_window.title("Low Stock Products")
     low_stock_window.geometry("400x300")
     tk.Label(low_stock_window, text="Low Stock Products", font=("Arial", 14)).pack(pady=10)
-    
+
     for product in low_stock_products:
-        tk.Label(low_stock_window, text=f"Product ID: {product['id']}, Name: {product['name']}, Stock: {product['stock_quantity']}").pac
+        tk.Label(low_stock_window, text=f"Product ID: {product['id']}, Name: {product['name']}, Stock: {product['stock_quantity']}").pack(pady=2)

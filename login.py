@@ -6,7 +6,7 @@ from ui.main_menu import show_main_menu
 ADMIN_CREDENTIALS = {"username": "admin", "password": "admin123"}
 
 def login_screen():
-    # Create a login window
+    # Create a single Tk root window
     root = tk.Tk()
     root.title("Admin Login")
     root.geometry("300x200")
@@ -25,9 +25,13 @@ def login_screen():
 
         if username == ADMIN_CREDENTIALS["username"] and password == ADMIN_CREDENTIALS["password"]:
             messagebox.showinfo("Login Successful", "Welcome, Admin!")  
-            main_root = tk.Tk()
-            root.withdraw()  
-            show_main_menu(main_root) 
+            
+            # Clear the login window and show the main menu in the same window
+            for widget in root.winfo_children():
+                widget.destroy()
+
+            # Call the main menu function with the same root
+            show_main_menu(root)
         else:
             messagebox.showerror("Login Failed", "Invalid credentials. Please try again.")
 
