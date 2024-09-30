@@ -4,6 +4,7 @@ from ui.product_ui import show_product_menu,show_products_table
 from ui.stock_ui import show_stock_menu
 from ui.report_ui import show_report_menu
 from ui.delete_product_ui import show_delete_product_menu
+from ui.prediction_ui import show_predictions
 
 
 def show_main_menu(root):
@@ -20,6 +21,7 @@ def show_main_menu(root):
     tk.Button(main_menu, text="View Products", width=20, command=lambda: show_products_table(root)).pack(pady=5)  # Pass root correctly
     tk.Button(main_menu, text="View Sales Graph", width=20, command=show_report_menu).pack(pady=5)
     tk.Button(main_menu, text="Delete Product", width=20, command=show_delete_product_menu).pack(pady=5)
+    tk.Button(main_menu, text="Show Stock Predictions", command=show_predictions).pack(pady=5)
     tk.Button(main_menu, text="Exit", width=20, command=main_menu.quit).pack(pady=20)
 
 
