@@ -28,7 +28,3 @@ def show_predictions():
     # Add a close button
     close_button = tk.Button(prediction_window, text="Close", command=prediction_window.destroy)
     close_button.pack(pady=10)
-
-    # Add a close button
-    close_button = tk.Button(prediction_window, text="Close", command=prediction_window.destroy)
-    close_button.pack(pady=10)
