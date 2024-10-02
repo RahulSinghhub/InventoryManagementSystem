@@ -1,5 +1,5 @@
 import tkinter as tk
-from stock_check import get_prediction_results
+from ml.ml_model import get_restock_status_for_all_products
 
 def show_predictions():
     # Create a new window for predictions
@@ -7,7 +7,7 @@ def show_predictions():
     prediction_window.title("Stock Predictions")
 
     # Fetch predictions from stock_check.py
-    predictions = get_prediction_results()
+    predictions = get_restock_status_for_all_products()
 
     # Add a label to show predictions
     prediction_label = tk.Label(prediction_window, text="Stock Predictions", font=("Helvetica", 14))
@@ -20,8 +20,8 @@ def show_predictions():
     else:
         # Add the prediction results to the window
         for prediction in predictions:
-            product_name, stock_quantity, days_remaining = prediction
-            result_text = f"Product: {product_name} | Stock: {stock_quantity} | Days remaining: {days_remaining}"
+            product_id, days_remaining, restock_date = prediction
+            result_text = f"Product_ID: {product_id} | Restock Date: {restock_date} | Days remaining: {days_remaining}"
             result_label = tk.Label(prediction_window, text=result_text, font=("Helvetica", 12))
             result_label.pack(pady=5)
 
@@ -29,6 +29,3 @@ def show_predictions():
     close_button = tk.Button(prediction_window, text="Close", command=prediction_window.destroy)
     close_button.pack(pady=10)
 
-    # Add a close button
-    close_button = tk.Button(prediction_window, text="Close", command=prediction_window.destroy)
-    close_button.pack(pady=10)
