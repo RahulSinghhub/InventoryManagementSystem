@@ -94,13 +94,13 @@ def predict_restock_for_all_products(model):
     cursor = connection.cursor()
 
     # Fetch all product IDs and stock quantities from the products table
-    cursor.execute("SELECT id, stock_quantity FROM products")
+    cursor.execute("SELECT id, name, stock_quantity FROM products")
     products = cursor.fetchall()
 
     restock_predictions = []
 
     for product in products:
-        product_id, stock_quantity = product
+        product_id, name, stock_quantity = product
 
         # Fetch recent sales data for lag values (from 'sales' table)
         cursor.execute("""
@@ -113,7 +113,7 @@ def predict_restock_for_all_products(model):
         if sales_data:
             # Predict restock date for the product
             days_until_restock, restock_date = predict_restock(product_id, stock_quantity, sales_data, model)
-            restock_predictions.append((product_id, days_until_restock, restock_date))
+            restock_predictions.append((product_id,name, days_until_restock, restock_date))
 
     cursor.close()
     connection.close()
