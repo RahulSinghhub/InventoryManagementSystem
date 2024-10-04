@@ -5,7 +5,8 @@ from ui.stock_ui import show_stock_menu
 from ui.report_ui import show_report_menu
 from ui.delete_product_ui import show_delete_product_menu
 from ui.prediction_ui import show_predictions
-
+from ui.Add_Sales import show_add_sales_menu
+from ui.Simulate_sales import show_simulate_sales_menu
 
 def show_main_menu(root):
     # Create the main menu window
@@ -22,14 +23,12 @@ def show_main_menu(root):
     main_label = tk.Label(main_menu, text="Inventory Management System", font=label_font, bg="#2c3e50", fg="#ecf0f1")
     main_label.grid(row=0, column=0, columnspan=2, pady=20)
 
-    # Function to create rounded buttons without icons
+    # Function to create smooth buttons
     def create_button(parent, text, command, row, column):
-        # Create button with text
-        button = tk.Button(parent, text=text, font=button_font,
-                           bg="#27ae60", fg="#ffffff", bd=0, padx=20, pady=10,
-                           relief=tk.GROOVE, width=15)
-        button.config(command=command)
+        button = tk.Button(parent, text=text, font=button_font, bg="#27ae60", fg="#ffffff", bd=0, padx=20, pady=10,
+                           relief=tk.FLAT, width=15)
         button.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+        button.config(command=command)
 
     # Add buttons for different functionalities
     create_button(main_menu, "Add Product", show_product_menu, row=1, column=0)
@@ -38,11 +37,15 @@ def show_main_menu(root):
     create_button(main_menu, "View Sales Graph", show_report_menu, row=2, column=1)
     create_button(main_menu, "Delete Product", show_delete_product_menu, row=3, column=0)
     create_button(main_menu, "Stock Predictions", show_predictions, row=3, column=1)
+    create_button(main_menu, "Add Sales", show_add_sales_menu, row=4, column=0)
+    create_button(main_menu, "Simulate Sales", show_simulate_sales_menu, row=4, column=1)
 
     # Exit button at the bottom, with a different color
     exit_button = tk.Button(main_menu, text="Exit", font=button_font, bg="#c0392b", fg="#ffffff", bd=0,
-                            padx=20, pady=10, command=main_menu.quit)
-    exit_button.grid(row=4, column=0, columnspan=2, pady=20)
+                            padx=20, pady=10, relief=tk.FLAT, width=15)
+    exit_button.grid(row=5, column=0, columnspan=2, pady=20)
+
+    exit_button.config(command=main_menu.quit)
 
     # Adjust grid columns for responsiveness
     main_menu.grid_columnconfigure(0, weight=1)

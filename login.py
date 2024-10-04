@@ -56,19 +56,30 @@ def login_screen():
         password = password_entry.get()
 
         if username == ADMIN_CREDENTIALS["username"] and password == ADMIN_CREDENTIALS["password"]:
-            messagebox.showinfo("Login Successful", "Welcome, Admin!")
+            # Customize the success message box with more user-friendly info
+            messagebox.showinfo("Login Successful", "Welcome, Admin! You are now logged in.")
 
             # Clear the login window and show the main menu in the same window
-            for widget in root.winfo_children():
-                widget.destroy()
-
-            # Call the main menu function with the same root
-            show_main_menu(root)
+            root.withdraw()  # Hide the login window
+            show_main_menu(root)  # Show the main menu in the same root window
         else:
-            messagebox.showerror("Login Failed", "Invalid credentials. Please try again.")
+            # Customize the error message box for a better user experience
+            messagebox.showerror("Login Failed", "Invalid username or password. Please try again.")
 
-    # Login button with padding and fixed height
-    login_button = tk.Button(root, text="Login", command=verify_login, font=button_font, width=15, height=2, bg="#27ae60", fg="#ffffff", bd=0, padx=10, pady=5)
+    # Login button with slightly smaller size and padding
+    login_button = tk.Button(
+        root, 
+        text="Login", 
+        command=verify_login, 
+        font=button_font, 
+        width=17,    # Reduced width
+        height=2,    # Reduced height
+        bg="#27ae60", 
+        fg="#ffffff", 
+        bd=0, 
+        padx=10,     # Reduced padding
+        pady=5       # Reduced padding
+    )
     login_button.pack(pady=20)
 
     root.mainloop()

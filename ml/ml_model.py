@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 # Load and preprocess the data
 def train_model():
     # Step 1: Load the CSV into a DataFrame (for training)
-    df = pd.read_csv("C:\\Users\\Jayant\\Desktop\\New folder\\draft_data.csv")
+    df = pd.read_csv("ml//draft_data.csv")
 
     # Step 2: Preprocess the data
     df['Date'] = pd.to_datetime(df['Date'])

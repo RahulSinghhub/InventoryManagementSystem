@@ -50,27 +50,63 @@ def show_product_menu():
 def show_products_table(root):
     # Create a new window for showing products
     products_window = tk.Toplevel(root)
-    products_window.title("Products")
-    products_window.geometry("600x400")
-    products_window.configure(bg="#ecf0f1")
+    products_window.title("Products Inventory")
+    products_window.geometry("700x450")  # Adjusted height for better padding
+    products_window.configure(bg="#2c3e50")  # Dark background
 
     # Table header label
-    tk.Label(products_window, text="Product List", font=("Helvetica", 16, "bold"), bg="#2c3e50", fg="#ffffff").pack(pady=10)
+    header_label = tk.Label(products_window, text="Product Inventory", font=("Helvetica", 16, "bold"), 
+                            bg="#2c3e50", fg="#ecf0f1", anchor="w", padx=20)
+    header_label.pack(fill=tk.X, pady=(20, 10))  # Added padding and fill for better alignment
+
+    # Frame for the Treeview to provide padding
+    tree_frame = tk.Frame(products_window, bg="#2c3e50")
+    tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)  # Added padding
+
+    # Scrollbar for the Treeview
+    tree_scroll = tk.Scrollbar(tree_frame)
+    tree_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+
+    # Style the Treeview to match the theme
+    style = ttk.Style()
+    style.theme_use("clam")
+    style.configure("Treeview", 
+                    background="#34495e",  # Darker background for the table
+                    foreground="#ecf0f1",  # Text color to match the theme
+                    fieldbackground="#34495e",  # Background of the field
+                    rowheight=25,  # Adjust row height for better spacing
+                    bordercolor="#2c3e50",  # Subtle border color to blend with the background
+                    borderwidth=0)  # Remove harsh borders
+    style.map('Treeview', background=[('selected', '#2980b9')])  # Highlight selection
+
+    # Configure Treeview headings
+    style.configure("Treeview.Heading", 
+                    background="#2c3e50",  # Background for the headings
+                    foreground="#ecf0f1",  # Text color for headings
+                    font=("Helvetica", 12, "bold"))
 
     # Treeview for displaying products
-    tree = ttk.Treeview(products_window, columns=("ID", "Name", "Stock", "Total Sales"), show='headings', height=10)
+    tree = ttk.Treeview(tree_frame, columns=("ID", "Name", "Stock", "Total Sales"), show='headings', height=10, yscrollcommand=tree_scroll.set)
+    tree_scroll.config(command=tree.yview)
+
+    # Define column headers
     tree.heading("ID", text="ID")
     tree.heading("Name", text="Name")
     tree.heading("Stock", text="Stock Quantity")
     tree.heading("Total Sales", text="Total Sales")
 
-    # Styling the Treeview
-    tree.tag_configure('evenrow', background="#f0f0f0")
-    tree.tag_configure('oddrow', background="#ffffff")
-    
-    tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    # Define column widths
+    tree.column("ID", anchor=tk.CENTER, width=50)
+    tree.column("Name", anchor=tk.W, width=200)
+    tree.column("Stock", anchor=tk.CENTER, width=100)
+    tree.column("Total Sales", anchor=tk.CENTER, width=100)
 
-    # Fetch product details and insert into the treeview
+    # Styling rows with alternating colors
+    tree.tag_configure('evenrow', background="#34495e")  # Match table background
+    tree.tag_configure('oddrow', background="#2c3e50")  # Darker alternate rows
+    tree.pack(fill=tk.BOTH, expand=True)
+
+    # Fetch product details and insert into the Treeview
     query = """
     SELECT p.id, p.name, p.stock_quantity, COALESCE(SUM(s.quantity), 0) AS total_sales
     FROM products p
@@ -79,11 +115,12 @@ def show_products_table(root):
     """
 
     try:
-        connection = get_db_connection()  # Adjust as per your DB connection setup
+        connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
 
+        # Insert product data into the table
         for i, row in enumerate(rows):
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
             tree.insert("", tk.END, values=row, tags=(tag,))
@@ -93,6 +130,11 @@ def show_products_table(root):
     finally:
         cursor.close()
         connection.close()
+
+    # Close button at the bottom
+    close_button = tk.Button(products_window, text="Close", font=("Helvetica", 12, "bold"), 
+                             bg="#c0392b", fg="#ffffff", padx=20, pady=10, command=products_window.destroy)
+    close_button.pack(pady=(10, 20))  # Adjusted padding at the bottom
 
 # Function to show low stock products
 def show_low_stock():
